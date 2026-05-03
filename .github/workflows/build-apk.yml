@@ -8,31 +8,68 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - name: Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y python3-pip python3-setuptools python3-wheel git zip unzip openjdk-17-jdk autoconf automake libtool pkg-config zlib1g-dev libncurses5-dev libffi-dev libssl-dev ccache cmake
+          sudo apt install -y \
+            build-essential \
+            git \
+            zip \
+            unzip \
+            autoconf \
+            automake \
+            autotools-dev \
+            libtool \
+            libtool-bin \
+            libltdl-dev \
+            m4 \
+            gettext \
+            autopoint \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            libffi-dev \
+            libssl-dev \
+            libsqlite3-dev \
+            ccache \
+            cmake
 
       - name: Install Python dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install buildozer cython
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install buildozer cython==0.29.36
+
+      - name: Clean old build folders
+        run: |
+          rm -rf .buildozer
+          rm -rf bin
+
+      - name: Accept Android licenses
+        run: |
+          yes | buildozer android update || true
+          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Build APK
         run: |
-          yes | buildozer android debug
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
