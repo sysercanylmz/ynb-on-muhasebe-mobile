@@ -12,7 +12,7 @@ source.exclude_dirs = tests,bin,build,__pycache__,.git
 
 # Ana uygulama ayarları
 version = 1.0
-requirements = python3,sqlite3,kivy==2.3.1
+requirements = python3,sqlite3,filetype,kivy==2.3.1
 orientation = portrait
 fullscreen = 0
 icon.filename = %(source.dir)s/assets/app_icon.png
